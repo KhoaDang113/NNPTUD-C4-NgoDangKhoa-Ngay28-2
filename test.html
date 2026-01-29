@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts & Comments Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .deleted-row {
+            text-decoration: line-through;
+            opacity: 0.5;
+            background-color: #f8d7da !important;
+        }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <!-- Header -->
+        <header class="text-center text-white mb-5">
+            <h1 class="display-4 fw-bold">
+                <i class="bi bi-journal-text me-2"></i>Posts & Comments Manager
+            </h1>
+            <p class="lead opacity-75">Quản lý bài viết và bình luận dễ dàng</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="row g-4">
+            <!-- POSTS SECTION -->
+            <section class="col-12 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4 h-100">
+                    <div class="card-header bg-primary text-white rounded-top-4 py-3">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-file-earmark-text me-2"></i>Bài viết (Posts)
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Form thêm/sửa Post -->
+                        <form class="mb-4" onsubmit="event.preventDefault(); Save();">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label for="id_txt" class="form-label fw-semibold">ID</label>
+                                    <input type="text" class="form-control" id="id_txt" placeholder="Tự động nếu trống">
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="title_txt" class="form-label fw-semibold">Tiêu đề</label>
+                                    <input type="text" class="form-control" id="title_txt" placeholder="Nhập tiêu đề...">
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="view_txt" class="form-label fw-semibold">Lượt xem</label>
+                                    <input type="text" class="form-control" id="view_txt" placeholder="Nhập số lượt xem...">
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-save me-1"></i>Lưu bài viết
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <hr>
+
+                        <!-- Tìm kiếm Posts -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="search_post_txt" 
+                                       placeholder="Tìm theo ID hoặc tiêu đề..." 
+                                       oninput="SearchPosts()">
+                                <button class="btn btn-outline-secondary" type="button" onclick="ClearSearchPosts()">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng Posts -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Tiêu đề</th>
+                                        <th scope="col">Lượt xem</th>
+                                        <th scope="col" class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COMMENTS SECTION -->
+            <section class="col-12 col-lg-6">
+                <div class="card shadow-lg border-0 rounded-4 h-100">
+                    <div class="card-header bg-success text-white rounded-top-4 py-3">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-chat-left-text me-2"></i>Bình luận (Comments)
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Form thêm/sửa Comment -->
+                        <form class="mb-4" onsubmit="event.preventDefault(); SaveComment();">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label for="comment_id_txt" class="form-label fw-semibold">ID</label>
+                                    <input type="text" class="form-control" id="comment_id_txt" placeholder="Tự động nếu trống">
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="comment_postId_txt" class="form-label fw-semibold">Post ID</label>
+                                    <input type="text" class="form-control" id="comment_postId_txt" placeholder="ID bài viết liên quan...">
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="comment_text_txt" class="form-label fw-semibold">Nội dung</label>
+                                    <input type="text" class="form-control" id="comment_text_txt" placeholder="Nhập nội dung bình luận...">
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-save me-1"></i>Lưu bình luận
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <hr>
+
+                        <!-- Tìm kiếm Comments -->
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-success text-white">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="search_comment_txt" 
+                                       placeholder="Tìm theo Post ID..." 
+                                       oninput="SearchComments()">
+                                <button class="btn btn-outline-secondary" type="button" onclick="ClearSearchComments()">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bảng Comments -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Nội dung</th>
+                                        <th scope="col">Post ID</th>
+                                        <th scope="col" class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comments-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center text-white mt-5 opacity-75">
+            <p class="mb-0">
+                <i class="bi bi-code-slash me-1"></i>
+                Được xây dựng với Bootstrap 5 theo đúng quy tắc
+            </p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="main.js"></script>
+</body>
+</html>
